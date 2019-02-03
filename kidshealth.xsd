@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+elementFormDefault="qualified"
+targetNamespace="https://kids.health/kidshealth.xsd"
+xmlns="https://kids.health/kidshealth.xsd">
+
+    <xsd:element name="root">
+        <xsd:complexType>
+            <xsd:choice>
+                <xsd:element name="event" type="event-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="document" type="document-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="patient" type="patient-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="diseasecontraction" type="diseasecontraction-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="treatment" type="treatment-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="medicine" type="medicine-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="disease" type="disease-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="message" type="message-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="appointentrequest" type="appointmentrequest-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="doctor" type="doctor-type" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="patientresponsible" type="patientresponsible-type" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:choice>
+        </xsd:complexType>
+
+        <xsd:key name="document_pk">
+            <xsd:selector xpath="document"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+
+        <xsd:key name="event_pk">
+            <xsd:selector xpath="event"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+        <xsd:keyref name="event_has_document_fk" refer="document_pk">
+            <xsd:selector xpath="event"/>
+            <xsd:field xpath="document-ref"/>
+        </xsd:keyref>
+
+        <xsd:key name="patient_pk">
+            <xsd:selector xpath="patient"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+        <xsd:keyref name="patient_has_event_fk" refer="event_pk">
+            <xsd:selector xpath="patient"/>
+            <xsd:field xpath="event-ref"/>
+        </xsd:keyref>
+        <xsd:keyref name="patient_has_message_fk" refer="message_pk">
+            <xsd:selector xpath="patient"/>
+            <xsd:field xpath="message-ref"/>
+        </xsd:keyref>
+
+        <xsd:key name="diseasecontraction_pk">
+            <xsd:selector xpath="diseasecontraction"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+        <xsd:keyref name="disease_diseasecontraction_fk" refer="disease_pk">
+            <xsd:selector xpath="diseasecontraction"/>
+            <xsd:field xpath="disease-ref"/>
+        </xsd:keyref>
+        <xsd:keyref name="patient_contracted_disease_fk" refer="patient_pk">
+            <xsd:selector xpath="diseasecontraction"/>
+            <xsd:field xpath="patient-ref"/>
+        </xsd:keyref>
+
+        <xsd:key name="treatment_pk">
+            <xsd:selector xpath="treatment"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+        <xsd:keyref name="diseasecontraction_has_treatment_fk" refer="diseasecontraction_pk">
+            <xsd:selector xpath="treatment"/>
+            <xsd:field xpath="diseasecontraction-ref"/>
+        </xsd:keyref>
+        <xsd:keyref name="treatment_has_medicine_fk" refer="medicine_pk">
+            <xsd:selector xpath="treatment"/>
+            <xsd:field xpath="medicine-ref"/>
+        </xsd:keyref>
+
+        <xsd:key name="medicine_pk">
+            <xsd:selector xpath="medicine"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+
+        <xsd:key name="disease_pk">
+            <xsd:selector xpath="disease"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+
+        <xsd:key name="message_pk">
+            <xsd:selector xpath="message"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+
+        <xsd:keyref name="message_has_appointmentrequest_fk" refer="message_pk">
+            <xsd:selector xpath="appointmentrequest"/>
+            <xsd:field xpath="message-ref"/>
+        </xsd:keyref>
+
+        <xsd:key name="user_pk">
+            <xsd:selector xpath="doctor|patientresponsible"/>
+            <xsd:field xpath="id"/>
+        </xsd:key>
+
+    </xsd:element>
+
+    <xsd:complexType name="document-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="path">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="3000"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="type" nillable="true" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="event-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="title">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="description" nillable="true" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="2000"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="venue" nillable="true" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="500"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="start_datetime" type="xsd:dateTime"/>
+            <xsd:element name="end_datetime" type="xsd:dateTime"/>
+            <xsd:element name="topic" nillable="true" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="document-ref" type="xsd:unsignedInt" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="patient-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="name">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="surname">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="birthdate" type="xsd:date"/>
+            <xsd:element name="height" nillable="true" minOccurs="0" type="xsd:unsignedInt"/>
+            <xsd:element name="weight" nillable="true" minOccurs="0" type="xsd:unsignedInt"/>
+            <xsd:element name="event-ref" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedInt"/>
+            <xsd:element name="message-ref" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedInt"/>
+            <xsd:element name="patientresponsible-ref" type="xsd:unsignedInt"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="diseasecontraction-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="started_at" type="xsd:date"/>
+            <xsd:element name="ended_at" nillable="true" minOccurs="0" type="xsd:date"/>
+            <xsd:element name="disease-ref" type="xsd:unsignedInt"/>
+            <xsd:element name="patient-ref" type="xsd:unsignedInt"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="treatment-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="diseasecontraction-ref" type="xsd:unsignedInt"/>
+            <xsd:element name="medicine-ref" type="xsd:unsignedInt"/>
+            <xsd:element name="timing" type="xsd:unsignedInt"/>
+            <xsd:element name="posology" type="xsd:unsignedInt"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="medicine-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="name">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="commercial_name" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="disease-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>        
+            <xsd:element name="name">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="500"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="short_name" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="message-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="body">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="5000"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="sended_at" type="xsd:dateTime"/>
+            <xsd:element name="doctor_is_sender" type="xsd:unsignedByte">
+                <xsd:annotation>
+                    <xsd:documentation>doctor_is_sender attribute: 1 if the sender is the doctor, 0 otherwise</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="appointmentrequest-type">
+        <xsd:sequence>
+            <xsd:element name="updated_at" nillable="true" minOccurs="0" type="xsd:dateTime"/>
+            <xsd:element name="status" nillable="true" minOccurs="0">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="Rejected"/>
+                        <xsd:enumeration value="Pending"/>
+                        <xsd:enumeration value="Accepted"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="message-ref" type="xsd:unsignedInt"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="user-type">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:unsignedInt"/>
+            <xsd:element name="name">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="surname">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="email">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="password">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="255"/>
+                        <xsd:minLength value="1"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="doctor-type">
+        <xsd:complexContent>
+            <xsd:extension base="user-type">
+                <xsd:sequence>
+                    <xsd:element name="message-ref" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedInt"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="patientresponsible-type">
+        <xsd:complexContent>
+            <xsd:extension base="user-type">
+                <xsd:sequence>
+                    <xsd:element name="phone_number" minOccurs="0">
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:maxLength value="20"/>
+                                <xsd:minLength value="1"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element name="email" minOccurs="0">
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:maxLength value="500"/>
+                                <xsd:minLength value="1"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+</xsd:schema>
