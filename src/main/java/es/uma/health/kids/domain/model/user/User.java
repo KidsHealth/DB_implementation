@@ -10,8 +10,8 @@ import es.uma.health.kids.domain.model.message.MessageId;
 import es.uma.health.kids.domain.model.patient.Patient;
 
 public abstract class User {
-
-    protected UserId id;
+	
+	protected UserId id;
     protected UserFullName fullName;
     protected Email email;
     protected Password password;
@@ -96,5 +96,12 @@ public abstract class User {
 				patientAbout.doctorId(), patientAbout.id(), proposedDatetime, 
 				LocalDateTime.now(), Status.PENDING);
 	}
+	
+
+    @Override
+	public String toString() {
+		return "User [id=" + id.value() + ", fullName=" + fullName + ", email=" + email.value() + ", password=" + password.value() + "]";
+	}
+
 	
 }

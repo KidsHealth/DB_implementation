@@ -5,13 +5,14 @@ import java.util.*;
 import es.uma.health.kids.domain.model.user.*;
 
 public class DBUserRepository implements UserRepository {
-	
+
 	Connection con = null;
 	protected Map<UserId, User> users;
 
 	public DBUserRepository() {
 		String url = "jdbc:mysql://localhost:3306/kidshealth?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-		// CAMBIAR AQUI USERNAME Y PASSWORD SI TIENES OTRA DIFERENTE EN TU SERVIDOR DE MYSQL
+		// CAMBIAR AQUI USERNAME Y PASSWORD SI TIENES OTRA DIFERENTE EN TU SERVIDOR DE
+		// MYSQL
 		String username = "root";
 		String password = "password";
 		try {
@@ -21,7 +22,7 @@ public class DBUserRepository implements UserRepository {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		}	
+		}
 		this.users = new HashMap<UserId, User>();
 	}
 
@@ -33,8 +34,8 @@ public class DBUserRepository implements UserRepository {
 	// GET
 	@Override
 	public User ofId(UserId anId) {
-		String sql = "SELECT * from user where id="+anId+";";
-		User u = null;
+		String sql = "select u.* from user as u join doctor d on u.id = d.User_id where u.id=" + anId.value() + ";";
+		Doctor d = null;
 		Statement st;
 		try {
 			st = con.createStatement();
@@ -44,16 +45,36 @@ public class DBUserRepository implements UserRepository {
 				UserFullName f = new UserFullName(rs.getString(2), rs.getString(3));
 				Email e = new Email(rs.getString(4));
 				Password p = new Password(rs.getString(5));
-				
-				// u = new User(i, f, e, p);	
+
+				d = new Doctor(i, f, e, p);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return u;
+		if (d == null) {
+			sql = "select u.* from user as u join patientresponsible p on u.id = p.User_id where u.id=" + anId.value() + ";";
+			PatientResponsible a = null;
+			try {
+				st = con.createStatement();
+				ResultSet rs = st.executeQuery(sql);
+				while (rs.next()) {
+					UserId i = new UserId(rs.getInt(1));
+					UserFullName f = new UserFullName(rs.getString(2), rs.getString(3));
+					Email e = new Email(rs.getString(4));
+					Password p = new Password(rs.getString(5));
+
+					a = new PatientResponsible(i, f, e, p);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return a;
+		}else {
+			return d;
+		}
 	}
 
-	// POST 
+	// POST
 	@Override
 	public void add(User user) {
 		String sql = "INSERT into user VALUES (?,?,?,?,?);";
@@ -67,7 +88,7 @@ public class DBUserRepository implements UserRepository {
 			st.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}	
+		}
 		users.put(user.id(), user);
 	}
 

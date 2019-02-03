@@ -23,7 +23,15 @@ public class DiseaseShortName {
         return Objects.equals(shortNameString, that.shortNameString);
     }
 
-    @Override
+    public String value() {
+		return shortNameString;
+	}
+
+	public void setShortNameString(String shortNameString) {
+		this.shortNameString = shortNameString;
+	}
+
+	@Override
     public int hashCode() {
         return Objects.hash(shortNameString);
     }

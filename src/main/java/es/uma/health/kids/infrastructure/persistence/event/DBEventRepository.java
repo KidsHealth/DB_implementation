@@ -111,8 +111,8 @@ public class DBEventRepository implements EventRepository {
 				
 				events.put(e.id(), e);	
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
 		}
 		
 		return events.values();

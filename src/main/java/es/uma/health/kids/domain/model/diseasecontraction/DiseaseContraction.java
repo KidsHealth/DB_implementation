@@ -81,5 +81,11 @@ public class DiseaseContraction {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "DiseaseContraction [id=" + id.value() + ", diagnosedAt=" + diagnosedAt + ", diseaseName=" + diseaseName.stringName()
+				+ ", diseaseShortName=" + diseaseShortName.value() + ", patientId=" + patientId.value() + "]";
+	}
 	
 }
