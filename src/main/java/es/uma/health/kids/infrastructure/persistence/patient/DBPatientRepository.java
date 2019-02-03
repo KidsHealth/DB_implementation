@@ -2,6 +2,7 @@ package es.uma.health.kids.infrastructure.persistence.patient;
 
 import java.sql.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 import es.uma.health.kids.domain.model.patient.*;
@@ -42,8 +43,8 @@ public class DBPatientRepository implements PatientRepository {
 			PreparedStatement st = con.prepareStatement(sql);
 			st.setInt(1, aPatient.id().value());
 			st.setString(2, aPatient.fullName().name());
-			st.setString(3, aPatient.fullName().surname());
-			st.setDate(4, (Date) aPatient.birthdate());
+			st.setString(3, aPatient.fullName().surname());			
+			st.setDate(4, Date.valueOf(aPatient.birthdate()));
 			st.setInt(5, aPatient.patientResponsibleId().value());
 			st.setInt(6, aPatient.doctorId().value());
 			st.executeUpdate();
@@ -84,7 +85,7 @@ public class DBPatientRepository implements PatientRepository {
 
 	// GET
 	@Override
-	public Map<PatientId, Patient> all() {
+	public Collection<Patient> all() {
 		this.patients = new HashMap<>();
 		String sql = "SELECT * from patient;";
 
@@ -95,7 +96,7 @@ public class DBPatientRepository implements PatientRepository {
 			while (rs.next()) {
 				PatientId i = new PatientId(rs.getInt(1));
 				PatientFullName f = new PatientFullName(rs.getString(2), rs.getString(3));
-				Date birth = rs.getDate(4);
+				LocalDate birth = rs.getDate(4).toLocalDate();
 				UserId respon = new UserId(rs.getInt(5));
 				UserId doctor = new UserId(rs.getInt(6));
 				Patient patient = new Patient(i, f, birth, respon, doctor);
@@ -106,7 +107,7 @@ public class DBPatientRepository implements PatientRepository {
 			e.printStackTrace();
 		}
 		
-		return patients;
+		return patients.values();
 	}
 
 	// GET
@@ -121,7 +122,7 @@ public class DBPatientRepository implements PatientRepository {
 			while (rs.next()) {
 				PatientId i = new PatientId(rs.getInt(1));
 				PatientFullName f = new PatientFullName(rs.getString(2), rs.getString(3));
-				Date birth = rs.getDate(4);
+				LocalDate birth = rs.getDate(4).toLocalDate();
 				UserId respon = new UserId(rs.getInt(5));
 				UserId doctor = new UserId(rs.getInt(6));
 				
@@ -136,7 +137,7 @@ public class DBPatientRepository implements PatientRepository {
 
 	// GET
 	@Override
-	public Map<PatientId, Patient> ofResponsible(UserId responsibleId) {
+	public Collection<Patient> ofResponsible(UserId responsibleId) {
 		this.patients = new HashMap<>();
 		String sql = "SELECT * from patient where PatientResponsible_User_id="+responsibleId+";";
 
@@ -147,7 +148,7 @@ public class DBPatientRepository implements PatientRepository {
 			while (rs.next()) {
 				PatientId i = new PatientId(rs.getInt(1));
 				PatientFullName f = new PatientFullName(rs.getString(2), rs.getString(3));
-				Date birth = rs.getDate(4);
+				LocalDate birth = rs.getDate(4).toLocalDate();
 				UserId respon = new UserId(rs.getInt(5));
 				UserId doctor = new UserId(rs.getInt(6));
 				Patient patient = new Patient(i, f, birth, respon, doctor);
@@ -157,12 +158,12 @@ public class DBPatientRepository implements PatientRepository {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return patients;
+		return patients.values();
 	}
 
 	// GET
 	@Override
-	public Map<PatientId, Patient> ofDoctor(UserId doctorId) {
+	public Collection<Patient> ofDoctor(UserId doctorId) {
 		this.patients = new HashMap<>();
 		String sql = "SELECT * from patient where Doctor_User_id="+doctorId+";";
 
@@ -173,7 +174,7 @@ public class DBPatientRepository implements PatientRepository {
 			while (rs.next()) {
 				PatientId i = new PatientId(rs.getInt(1));
 				PatientFullName f = new PatientFullName(rs.getString(2), rs.getString(3));
-				Date birth = rs.getDate(4);
+				LocalDate birth = rs.getDate(4).toLocalDate();
 				UserId respon = new UserId(rs.getInt(5));
 				UserId doctor = new UserId(rs.getInt(6));
 				Patient patient = new Patient(i, f, birth, respon, doctor);
@@ -184,6 +185,31 @@ public class DBPatientRepository implements PatientRepository {
 			e.printStackTrace();
 		}
 		
-		return patients;
+		return patients.values();
+	}
+	
+	public Collection<Patient> relatedWith(UserId userId){
+		this.patients = new HashMap<>();
+		String sql = "SELECT * from patient where Doctor_User_id ="+ userId+" or PatientResponsible_User_id ="+userId+";";
+
+		Statement st;
+		try {
+			st = con.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			while (rs.next()) {
+				PatientId i = new PatientId(rs.getInt(1));
+				PatientFullName f = new PatientFullName(rs.getString(2), rs.getString(3));
+				LocalDate birth = rs.getDate(4).toLocalDate();
+				UserId respon = new UserId(rs.getInt(5));
+				UserId doctor = new UserId(rs.getInt(6));
+				Patient patient = new Patient(i, f, birth, respon, doctor);
+				
+				patients.put(patient.id(), patient);	
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return patients.values();
 	}
 }

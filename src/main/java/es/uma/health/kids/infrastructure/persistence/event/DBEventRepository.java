@@ -6,13 +6,14 @@ import java.util.*;
 
 import es.uma.health.kids.domain.model.event.*;
 import es.uma.health.kids.domain.model.message.MessageId;
+import es.uma.health.kids.domain.model.patient.PatientId;
 
 public class DBEventRepository implements EventRepository {
 
 	Connection con = null;
 	private Map<EventId, Event> events;
 	
-	public DBEventRepository(Map<EventId, Event> events) {
+	public DBEventRepository() {
 		String url = "jdbc:mysql://localhost:3306/kidshealth?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 		// CAMBIAR AQUI USERNAME Y PASSWORD SI TIENES OTRA DIFERENTE EN TU SERVIDOR DE MYSQL
 		String username = "root";
@@ -26,7 +27,7 @@ public class DBEventRepository implements EventRepository {
 			e.printStackTrace();
 		}		
 		
-		this.events = events;
+		events = new HashMap<EventId, Event>();
 	}
 	
 	// GET
@@ -87,7 +88,7 @@ public class DBEventRepository implements EventRepository {
 
 	// GET 
 	@Override
-	public Map<EventId, Event> all() {
+	public Collection<Event> all() {
 		
 		events = new HashMap<EventId, Event>();
 		String sql = "SELECT * from event;";
@@ -100,12 +101,13 @@ public class DBEventRepository implements EventRepository {
 				EventId i = new EventId(rs.getInt(1));
 				EventTitle t = new EventTitle(rs.getString(2));
 				EventDescription d = new EventDescription(rs.getString(3));
-				EventTopic c = new EventTopic(rs.getString(4));
-				EventVenue v = new EventVenue(rs.getString(5));
-				LocalDateTime start = rs.getTimestamp(6).toLocalDateTime();
-				LocalDateTime end = rs.getTimestamp(7).toLocalDateTime();
-				
-				Event e = new Event(i, t, d, c, v,start,end);
+				EventVenue v = new EventVenue(rs.getString(4));
+				LocalDateTime start = rs.getTimestamp(5).toLocalDateTime();
+				LocalDateTime end = rs.getTimestamp(6).toLocalDateTime();
+				EventTopic c = new EventTopic(rs.getString(7));
+				PatientId p = new PatientId(rs.getInt(8));
+
+				Event e = new Event(i, t, d, c, v,start,end, p);
 				
 				events.put(e.id(), e);	
 			}
@@ -113,7 +115,7 @@ public class DBEventRepository implements EventRepository {
 			e.printStackTrace();
 		}
 		
-		return events;
+		return events.values();
 	}
 	
 	// GET
@@ -129,12 +131,13 @@ public class DBEventRepository implements EventRepository {
 				EventId i = new EventId(rs.getInt(1));
 				EventTitle t = new EventTitle(rs.getString(2));
 				EventDescription d = new EventDescription(rs.getString(3));
-				EventTopic c = new EventTopic(rs.getString(4));
-				EventVenue v = new EventVenue(rs.getString(5));
-				LocalDateTime start = rs.getTimestamp(6).toLocalDateTime();
-				LocalDateTime end = rs.getTimestamp(7).toLocalDateTime();
-				
-				e = new Event(i, t, d, c, v,start,end);
+				EventVenue v = new EventVenue(rs.getString(4));
+				LocalDateTime start = rs.getTimestamp(5).toLocalDateTime();
+				LocalDateTime end = rs.getTimestamp(6).toLocalDateTime();
+				EventTopic c = new EventTopic(rs.getString(7));
+				PatientId p = new PatientId(rs.getInt(8));
+
+				e = new Event(i, t, d, c, v,start,end, p);
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();

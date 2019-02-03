@@ -80,7 +80,7 @@ public class DBMessageRepository implements MessageRepository {
 	}
 
 	@Override
-	public Map<MessageId, Message> all() {
+	public Collection<Message> all() {
 		Map<MessageId, Message> messages = new HashMap<MessageId, Message>();
 		String sql = "SELECT * from message;";
 
@@ -103,7 +103,7 @@ public class DBMessageRepository implements MessageRepository {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return messages;
+		return messages.values();
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class DBMessageRepository implements MessageRepository {
 	}
 
 	@Override
-	public Map<MessageId, Message> ofPatient(PatientId patientId) {
+	public Collection<Message> ofPatient(PatientId patientId) {
 		Map<MessageId, Message> messages = new HashMap<MessageId, Message>();
 		String sql = "SELECT * from message WHERE Patient_id=" + patientId.value() + ";";
 		
@@ -154,7 +154,7 @@ public class DBMessageRepository implements MessageRepository {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return messages;
+		return messages.values();
 	}
 
 }
