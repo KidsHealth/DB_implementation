@@ -25,7 +25,15 @@ public class Posology {
         return miligrams == that.miligrams;
     }
 
-    @Override
+    public int value() {
+		return miligrams;
+	}
+
+	public void setMiligrams(int miligrams) {
+		this.miligrams = miligrams;
+	}
+
+	@Override
     public int hashCode() {
         return Objects.hash(miligrams);
     }

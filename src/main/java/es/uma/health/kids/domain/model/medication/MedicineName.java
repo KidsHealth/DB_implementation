@@ -25,7 +25,15 @@ public class MedicineName {
         return Objects.equals(nameString, that.nameString);
     }
 
-    @Override
+    public String value() {
+		return nameString;
+	}
+
+	public void setNameString(String nameString) {
+		this.nameString = nameString;
+	}
+
+	@Override
     public int hashCode() {
         return Objects.hash(nameString);
     }

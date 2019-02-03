@@ -10,7 +10,7 @@ public interface PatientResponsibleRepository extends UserRepository {
 
 	public void delete(PatientResponsible aResponsible);
 
-	public Collection<PatientResponsible> all();
+	public Collection<User> all();
 
 	public PatientResponsible ofEmail(Email anEmail);
 	

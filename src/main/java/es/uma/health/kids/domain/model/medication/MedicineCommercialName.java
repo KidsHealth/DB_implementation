@@ -25,7 +25,15 @@ public class MedicineCommercialName {
         return Objects.equals(commercialNameString, that.commercialNameString);
     }
 
-    @Override
+    public String value() {
+		return commercialNameString;
+	}
+
+	public void setCommercialNameString(String commercialNameString) {
+		this.commercialNameString = commercialNameString;
+	}
+
+	@Override
     public int hashCode() {
         return Objects.hash(commercialNameString);
     }

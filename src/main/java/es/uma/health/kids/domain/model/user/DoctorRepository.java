@@ -10,7 +10,7 @@ public interface DoctorRepository extends UserRepository {
 
 	public void delete(Doctor aDoctor);
 
-	public Collection<Doctor> all();
+	public Collection<User> all();
 
 	public Doctor ofEmail(Email anEmail);
 	

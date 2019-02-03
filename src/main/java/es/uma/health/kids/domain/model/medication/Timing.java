@@ -25,7 +25,15 @@ public class Timing {
         return eachHours == that.eachHours;
     }
 
-    @Override
+    public int value() {
+		return eachHours;
+	}
+
+	public void setEachHours(int eachHours) {
+		this.eachHours = eachHours;
+	}
+
+	@Override
     public int hashCode() {
         return Objects.hash(eachHours);
     }
